@@ -3,14 +3,21 @@ import FriendRequest from "../models/FriendRequest.js";
 
 export async function getRecommendedUsers(req, res) {
   try {
+    // kyuki yaha bhi ye phle middle ware se authenticate ho kr
+    // aaya hai or hmne usme req object se user ko attach kia tha 
+    // isliye hum aise access kr pa rhe hain
     const currentUserId = req.user.id;
     const currentUser = req.user;
 
     const recommendedUsers = await User.find({
       $and: [
+        // it says _id is not equal to current id
         { _id: { $ne: currentUserId } }, //exclude current user
+        // and also should not be in the friend list of current user
         { _id: { $nin: currentUser.friends } }, // exclude current user's friends
-        { isOnboarded: true },
+        { isOnboarded: true }, // this is compulsory that the user must 
+        // be onboarded if he won't be onboarded then his native language
+        // and learnig language we won't be able to find
       ],
     });
     res.status(200).json(recommendedUsers);
@@ -22,6 +29,14 @@ export async function getRecommendedUsers(req, res) {
 
 export async function getMyFriends(req, res) {
   try {
+//     .populate("friends", "fullName profilePic nativeLanguage learningLanguage")
+//     This tells Mongoose:
+//      "For each ObjectId in friends, go to the User model and replace the ID with selected fields from the actual user document."
+//     You're asking to fetch only 4 fields from each friend:
+//     fullName
+//     profilePic
+//     nativeLanguage
+//     learningLanguage
     const user = await User.findById(req.user.id)
       .select("friends")
       .populate("friends", "fullName profilePic nativeLanguage learningLanguage");

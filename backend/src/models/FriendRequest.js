@@ -19,6 +19,8 @@ const friendRequestSchema = new mongoose.Schema(
     },
   },
   {
+    // because of this we get createdAt and updatedAt
+    // fields in mongoDB
     timestamps: true,
   }
 );

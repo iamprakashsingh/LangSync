@@ -4,6 +4,7 @@ import express from "express";
 import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+// for deployment
 import path from "path";
 
 import authRoutes from "./routes/auth.route.js";
@@ -36,8 +37,11 @@ app.use("/api/chat", chatRoutes);
 // })
 
 if (process.env.NODE_ENV === "production") {
+  // if in production take the dist folder from frontend and convert it to static
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
+  // so this says any route other than above defined route will return our
+  // react application
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
